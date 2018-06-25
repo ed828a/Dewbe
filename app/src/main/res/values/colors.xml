@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#090b15</color>
+    <color name="colorPrimaryDark">#05060c</color>
+    <color name="colorAccent">#fbfdf8</color>
+    <color name="channelBackground">#dc75dc</color>
+    <color name="playListBackground">#70e470</color>
+    <color name="liveBackground">#5ea9e2</color>
+    <color name="colorPrimaryText">#212121</color>
+    <color name="colorSecondaryText">#757575</color>
+    <color name="colorIcons">#FFFFFF</color>
+    <color name="colorDivider">#BDBDBD</color>
+    <color name="colorPrimaryLight">#B2EBF2</color>
+</resources>

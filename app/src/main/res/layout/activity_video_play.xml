@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.VideoPlayActivity">
+    <com.google.android.youtube.player.YouTubePlayerView
+        android:id="@+id/youtubePlayer"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textVideoPlayTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        app:layout_constraintEnd_toStartOf="@+id/buttonDownload"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/buttonSearch"
+        app:layout_constraintBottom_toBottomOf="@id/buttonSearch"
+        tools:text="NEW MOVIE TRAILERS 2018 | Weekly #22" />
+
+    <ImageButton
+        android:id="@+id/buttonDownload"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimaryDark"
+        android:src="@drawable/download"
+        app:layout_constraintEnd_toStartOf="@id/buttonSearch"
+        app:layout_constraintTop_toTopOf="@id/buttonSearch"
+        app:layout_constraintBottom_toBottomOf="@id/buttonSearch"/>
+
+    <android.support.v7.widget.SearchView
+        android:id="@+id/buttonSearch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="8dp"
+        android:textColor="@color/colorPrimaryText"
+        app:closeIcon="@drawable/ic_close"
+        app:iconifiedByDefault="true"
+        app:layout_constraintBottom_toTopOf="@id/recyclerRelatedListView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/youtubePlayer"
+        app:layout_constraintVertical_bias="0.421"
+        app:popupTheme="@style/AppTheme.PopupOverlay"
+        app:queryHint="Search movies" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recyclerRelatedListView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/buttonSearch" />
+</android.support.constraint.ConstraintLayout>
