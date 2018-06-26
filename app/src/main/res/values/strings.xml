@@ -3,4 +3,5 @@
     <string name="action_search">Search</string>
     <string name="db_in_memory">DB in Memory</string>
     <string name="db_in_storage">DB in Storage</string>
+    <string name="retry">Retry</string>
 </resources>
