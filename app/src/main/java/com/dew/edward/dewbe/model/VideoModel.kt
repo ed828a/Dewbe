@@ -19,21 +19,24 @@ data class VideoModel(var title: String = "",
                       @PrimaryKey
                       @ColumnInfo(name = "video_id")
                       var videoId: String = "",
+                      var relatedToVideoId: String = "",
         // indexResponse: to be consistent with changing backend order
-                      var indexResponse: Int = -1): Parcelable {
+                      var indexResponse: Int = -1) : Parcelable {
+
     constructor(parcel: Parcel) : this(
             parcel.readString(),
             parcel.readString(),
             parcel.readString(),
             parcel.readString(),
-            parcel.readInt()) {
-    }
+            parcel.readString(),
+            parcel.readInt())
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeString(title)
         parcel.writeString(date)
         parcel.writeString(thumbnail)
         parcel.writeString(videoId)
+        parcel.writeString(relatedToVideoId)
         parcel.writeInt(indexResponse)
     }
 
@@ -50,5 +53,5 @@ data class VideoModel(var title: String = "",
             return arrayOfNulls(size)
         }
     }
-
 }
+

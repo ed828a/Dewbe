@@ -67,12 +67,15 @@ class MainActivity : AppCompatActivity() {
 
     private fun initRecyclerView() {
         val glide = GlideApp.with(this)
-        val adapter = VideoModelAdapter(glide, { videoViewModel.retry() }, {
-            val intent = Intent(this@MainActivity, VideoPlayActivity::class.java)
+        val adapter = VideoModelAdapter(
+                { videoViewModel.retry() },
+                {
+                    val intent = Intent(this@MainActivity, VideoPlayActivity::class.java)
 
-            intent.putExtra(VIDEO_MODEL, it)
-            startActivity(intent)
-        })
+                    intent.putExtra(VIDEO_MODEL, it)
+                    startActivity(intent)
+                }
+        )
 
         if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
             mainListView.layoutManager = GridLayoutManager(this, 2)
@@ -82,7 +85,7 @@ class MainActivity : AppCompatActivity() {
 
         mainListView.adapter = adapter
         mainListView.setHasFixedSize(true)
-        videoViewModel.posts.observe(this, Observer<PagedList<VideoModel>> {
+        videoViewModel.videoList.observe(this, Observer<PagedList<VideoModel>> {
             adapter.submitList(it)
         })
         videoViewModel.networkState.observe(this, Observer {
@@ -119,7 +122,7 @@ class MainActivity : AppCompatActivity() {
                 query?.trim()?.let {
                     if (it.isNotEmpty()) {
 //                        Toast.makeText(searchView.context, "searchView is clicked : ${query?.trim()}", Toast.LENGTH_SHORT).show()
-                        if (videoViewModel.showSearchQuery(it)){
+                        if (videoViewModel.showSearchQuery(it)) {
                             mainListView.scrollToPosition(0)
                             (mainListView.adapter as? VideoModelAdapter)?.submitList(null)
                         }
@@ -141,7 +144,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun hideKeyboard() {
         val inputManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        if (inputManager.isAcceptingText){
+        if (inputManager.isAcceptingText) {
             inputManager.hideSoftInputFromWindow(currentFocus.windowToken, 0)
         }
     }

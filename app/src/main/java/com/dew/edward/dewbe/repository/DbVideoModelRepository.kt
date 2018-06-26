@@ -35,27 +35,34 @@ class DbVideoModelRepository(context: Context) {
     private val helper = PagingRequestHelper(ioExecutor)
     private val networkState = helper.createStatusLiveData()
 
+
     companion object {
         const val TAG = "DbVideoModelRepository"
         /**
          * Inserts the response into the database while also assigning position indices to items.
          */
-        fun insertResultIntoDb(db: YoutubeDb, title: String, items: List<VideoModel>) {
+        fun insertResultIntoDb(db: YoutubeDb, queryData: QueryData, items: List<VideoModel>) {
 
             db.runInTransaction {
-                val start = db.youtubeDao().getNextIndexInVideo(title.dbquery())
+                val start = db.youtubeDao().getNextIndexInVideo()
                 val indexedItems = items.mapIndexed { index, video ->
                     video.indexResponse = start + index
+                    if (queryData.type == Type.RELATED_VIDEO_ID) {
+                        video.relatedToVideoId = queryData.query
+                    }
+
                     Log.d("insertResultIntoDb", "Index: $index")
                     video
                 }
+
+
                 db.youtubeDao().insert(indexedItems)
             }
         }
 
         fun createWebserviceCallback(
                 db: YoutubeDb,
-                query: String,
+                queryData: QueryData,
                 helperRequestCallback: PagingRequestHelper.Request.Callback,
                 ioExecutor: Executor,
                 pageInfo: PageInfo) = object : Callback<YoutubeResponseData> {
@@ -84,8 +91,12 @@ class DbVideoModelRepository(context: Context) {
                         pageInfo.totalResults = data?.pageInfo?.totalResults ?: ""
 
                         db.runInTransaction {
-                            db.youtubeDao().deleteVideosByQuery(query.dbquery())
-                            insertResultIntoDb(db, query, mappedItems!!)
+                            if (queryData.type == Type.QUERY_STRING) {
+                                db.youtubeDao().deleteVideosByQuery(queryData.query.dbquery())
+                            } else {
+                                db.youtubeDao().deleteVideosByRelatedToVideoId(queryData.query)
+                            }
+                            insertResultIntoDb(db, queryData, mappedItems!!)
                             val data = db.youtubeDao().dumpAll()
                             Log.d(TAG, " onResponse, after insertResultIntoDb, dumpAll: $data")
                         }
@@ -99,6 +110,7 @@ class DbVideoModelRepository(context: Context) {
             }
         }
     }
+
     /**
      * When refresh is called, we simply run a fresh network request and when it arrives, clear
      * the database table and insert all new items in a transaction.
@@ -107,11 +119,16 @@ class DbVideoModelRepository(context: Context) {
      * updated after the database transaction is finished.
      */
     @MainThread
-    private fun refresh(query: String): LiveData<NetworkState> {
+    private fun refresh(queryData: QueryData): LiveData<NetworkState> {
 
         helper.runIfNotRunning(PagingRequestHelper.RequestType.AFTER) {
-            webService.searchVideo(query, pageStatus.nextPage).enqueue(
-                    createWebserviceCallback(db, query, it, ioExecutor, pageStatus))
+            val call = if (queryData.type == Type.QUERY_STRING) {
+                webService.searchVideo(queryData.query, pageStatus.nextPage)
+            } else {
+                webService.getRelatedVideos(queryData.query)
+            }
+
+            call.enqueue(createWebserviceCallback(db, queryData, it, ioExecutor, pageStatus))
         }
 
         return networkState
@@ -121,20 +138,25 @@ class DbVideoModelRepository(context: Context) {
      * Returns a Listing for the given query string.
      */
     @MainThread
-    fun searchVideosOnYoutube(query: String): Listing<VideoModel> {
+    fun searchVideosOnYoutube(queryData: QueryData): Listing<VideoModel> {
         // create a boundary callback which will observe when the user reaches to the edges of
         // the list and update the database with extra data.
-        Log.d(TAG, "postsOfSearchYoutube called, query =$query")
-        val boundaryCallback = VideosBoundaryCallback(query)
-        val dataSourceFactory = db.youtubeDao().getVideosByQuery(query.dbquery())
+        Log.d(TAG, "postsOfSearchYoutube called, query =${queryData.query}")
+        val boundaryCallback = VideosBoundaryCallback(queryData)
+        val dataSourceFactory = if (queryData.type == Type.QUERY_STRING) {
+            db.youtubeDao().getVideosByQuery(queryData.query.dbquery())
+        } else {
+            db.youtubeDao().getVideosByRelatedToVideoId(queryData.query)
+        }
 
         val pagedList = LivePagedListBuilder(dataSourceFactory, DATABASE_PAGE_SIZE)
                 .setBoundaryCallback(boundaryCallback)
 
+
         // temporary test
         onceExecutor.execute {
             val dumpAll = db.youtubeDao().dumpAll()
-            Log.d(TAG, "postsOfSearchYoutube $query DB stub: $dumpAll")
+            Log.d(TAG, "postsOfSearchYoutube ${queryData.query} DB stub: $dumpAll")
 
         }
 
@@ -143,16 +165,18 @@ class DbVideoModelRepository(context: Context) {
         // dispatched data in refreshTrigger
         // so this part code should locate in ViewModel, not here, and unit should be Query String
         val refreshTriger = MutableLiveData<Unit>()
-        val refreshState = Transformations.switchMap(refreshTriger) { refresh(query) }
+        val refreshState = Transformations.switchMap(refreshTriger) { refresh(queryData) }
 
-        return Listing(pagedList.build(), networkState,
+        return Listing(
+                pagedList.build(),
+                networkState,
                 retry = { helper.retryAllFailed() },
                 refresh = { refreshTriger.value = null },
                 refreshState = refreshState
         )
     }
 
-    fun dumpDb(query: String){
+    fun dumpDb(queryData: QueryData) {
 //        db.youtubeDao().deleteVideosByQuery(query.dbquery())
         val stub = db.youtubeDao().dumpAll()
         Log.d(TAG, "DB stub: $stub")
@@ -164,21 +188,36 @@ class DbVideoModelRepository(context: Context) {
         pageStatus.totalResults = ""
     }
 
-    inner class VideosBoundaryCallback(val query: String) : PagedList.BoundaryCallback<VideoModel>() {
+    inner class VideosBoundaryCallback(private val queryData: QueryData) : PagedList.BoundaryCallback<VideoModel>() {
+
+        private var lastQuery: String = ""
+
         /**
          * Database returned 0 items. We should query the backend for more items.
          * initialize a new query
          */
         @MainThread
         override fun onZeroItemsLoaded() {
-            Log.d(TAG, "onZeroItemsLoaded called:")
+            Log.d(TAG, "onZeroItemsLoaded: query = ${queryData.query}, lastQuery = $lastQuery")
+            if (queryData.type == Type.QUERY_STRING){
+                if (queryData.query == lastQuery) {
+                    Log.d(TAG, "query==lastQuery, return")
+//                return
+                }
 
-            // temporary for testing
-            ioExecutor.execute { dumpDb(query.dbquery()) }
+                lastQuery = queryData.query
+                // temporary for testing
+                ioExecutor.execute { dumpDb(queryData) }
+            }
+
 
             helper.runIfNotRunning(PagingRequestHelper.RequestType.INITIAL) {
-                webService.searchVideo(query).enqueue(
-                        createWebserviceCallback(db, query, it, ioExecutor, pageStatus))
+                val call = if (queryData.type == Type.QUERY_STRING){
+                    webService.searchVideo(queryData.query)
+                } else {
+                    webService.getRelatedVideos(queryData.query)
+                }
+                call.enqueue(createWebserviceCallback(db, queryData, it, ioExecutor, pageStatus))
             }
         }
 
@@ -186,10 +225,20 @@ class DbVideoModelRepository(context: Context) {
          * User reached to the end of the list.
          */
         override fun onItemAtEndLoaded(itemAtEnd: VideoModel) {
-            Log.d(TAG, "onItemAtEndLoaded called:")
+            Log.d(TAG, "onItemAtEndLoaded called, nextPageToken: ${pageStatus.nextPage}")
+
+            if (pageStatus.nextPage.isEmpty()) {
+                Log.d(TAG, "nextPage = ${pageStatus.nextPage}, return")
+                return
+            }
+
             helper.runIfNotRunning(PagingRequestHelper.RequestType.AFTER) {
-                webService.searchVideo(query, pageStatus.nextPage).enqueue(
-                        createWebserviceCallback(db, query, it, ioExecutor, pageStatus))
+                val call = if (queryData.type == Type.QUERY_STRING){
+                    webService.searchVideo(queryData.query, pageStatus.nextPage)
+                } else {
+                    webService.getRelatedVideos(queryData.query)
+                }
+                call.enqueue(createWebserviceCallback(db, queryData, it, ioExecutor, pageStatus))
             }
         }
 

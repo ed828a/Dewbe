@@ -9,14 +9,14 @@ import android.view.ViewGroup
 import com.dew.edward.dewbe.R
 import com.dew.edward.dewbe.model.NetworkState
 import com.dew.edward.dewbe.model.VideoModel
+import com.dew.edward.dewbe.util.GlideApp
 import com.dew.edward.dewbe.util.GlideRequests
 import kotlinx.android.synthetic.main.cell_video.view.*
 
 /**
  * Created by Edward on 6/26/2018.
  */
-class VideoModelAdapter(private val glide: GlideRequests,
-                        private val retryCallback: () -> Unit,
+class VideoModelAdapter(private val retryCallback: () -> Unit,
                         val listener: (VideoModel) -> Unit) : PagedListAdapter<VideoModel, RecyclerView.ViewHolder>(COMPARATOR) {
 
     private var networkState: NetworkState? = null
@@ -27,8 +27,8 @@ class VideoModelAdapter(private val glide: GlideRequests,
                 val view = LayoutInflater.from(parent.context)
                         .inflate(R.layout.cell_video, parent, false)
                 //for test now
-                // val glideRequests = GlideApp.with(parent.context)
-                VideoModelViewHolder(view, glide)
+                val glideRequests = GlideApp.with(parent.context)
+                VideoModelViewHolder(view, glideRequests)
             }
             R.layout.cell_network_state -> NetworkStateItemViewHolder.create(parent, retryCallback)
             else -> throw IllegalArgumentException("unknown view type $viewType")
@@ -100,7 +100,7 @@ class VideoModelAdapter(private val glide: GlideRequests,
     }
 
     inner class VideoModelViewHolder(view: View,
-                                     private val glide: GlideRequests) : RecyclerView.ViewHolder(view){
+                                     private val glide: GlideRequests) : RecyclerView.ViewHolder(view) {
 
         private val textViewTitle = view.textViewTitle
         private val textViewDesc = view.textViewChannelTitle
@@ -118,15 +118,5 @@ class VideoModelAdapter(private val glide: GlideRequests,
             textViewDate.text = videoModel.date
             glide.load(videoModel.thumbnail).centerCrop().into(imageViewThumb)
         }
-
-        fun create(parent: ViewGroup, glide: GlideRequests, videoModel: VideoModel,
-                   listener: (VideoModel) -> Unit): VideoModelViewHolder {
-            val view = LayoutInflater.from(parent.context)
-                    .inflate(R.layout.cell_video, parent, false)
-            return VideoModelViewHolder(view, glide)
-        }
-
     }
-
-
 }

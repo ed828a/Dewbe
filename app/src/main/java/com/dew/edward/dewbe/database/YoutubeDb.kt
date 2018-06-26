@@ -12,7 +12,7 @@ import com.dew.edward.dewbe.model.VideoModel
  */
 @Database(
         entities = [(VideoModel::class)],
-        version = 1,
+        version = 2,
         exportSchema = false
 )
 abstract class YoutubeDb: RoomDatabase() {

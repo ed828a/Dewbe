@@ -22,8 +22,14 @@ interface YoutubeDao {
     @Query("DELETE FROM youtube WHERE title LIKE :query")
     fun deleteVideosByQuery(query: String)
 
-    @Query("SELECT MAX(indexResponse) + 1 FROM youtube WHERE title LIKE :query")
-    fun getNextIndexInVideo(query: String): Int
+    @Query("SELECT * FROM youtube WHERE relatedToVideoId = :relatedToVideoId ORDER BY indexResponse ASC")
+    fun getVideosByRelatedToVideoId(relatedToVideoId: String): DataSource.Factory<Int, VideoModel>
+
+    @Query("DELETE FROM youtube WHERE relatedToVideoId = :relatedToVideoId")
+    fun deleteVideosByRelatedToVideoId(relatedToVideoId: String)
+
+    @Query("SELECT MAX(indexResponse) + 1 FROM youtube")
+    fun getNextIndexInVideo(): Int
 
     @Query("SELECT * FROM youtube ORDER BY indexResponse ASC")
     fun dumpAll(): List<VideoModel>
