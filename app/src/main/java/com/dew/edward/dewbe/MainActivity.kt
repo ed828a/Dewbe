@@ -39,6 +39,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var videoViewModel: DbVideoViewModel
     private lateinit var preferences: SharedPreferences
     private lateinit var query: String
+    private var searchView: SearchView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,6 +64,7 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         hideKeyboard()
+        searchView?.clearFocus()
     }
 
     private fun initActionBar() {
@@ -119,8 +121,10 @@ class MainActivity : AppCompatActivity() {
         // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.menu_main, menu)
 
-        val searchView: SearchView? = menu.findItem(R.id.menu_search).actionView as SearchView?
-        if (searchView != null) initSearchView(searchView)
+        searchView = menu.findItem(R.id.menu_search).actionView as SearchView?
+
+        val view: SearchView = searchView!!
+        if (searchView != null) initSearchView(view)
 
         return true
     }
@@ -167,7 +171,6 @@ class MainActivity : AppCompatActivity() {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         return when (item.itemId) {
-            R.id.menu_search -> true
             R.id.menu_in_memory -> {
                 preferences.edit().putBoolean(KEY_USE_IN_MEM, true).apply()
                 true

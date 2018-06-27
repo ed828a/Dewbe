@@ -195,7 +195,6 @@ class VideoPlayActivity : YouTubeBaseActivity(), YouTubePlayer.OnInitializedList
 
                 override fun onPaused() {
                 }
-
             }
 
     override fun onDestroy() {

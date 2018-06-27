@@ -24,7 +24,7 @@ import java.util.concurrent.Executors
 class DbVideoModelRepository(context: Context) {
 
     val db: YoutubeDb by lazy {
-        YoutubeDb.create(context, false)
+        YoutubeDb.create(context, false)  // useInMemory meaningless here as we don't want to load all items in mem at once.
     }
 
     val webService = YoutubeAPI.create()
@@ -66,6 +66,7 @@ class DbVideoModelRepository(context: Context) {
                 helperRequestCallback: PagingRequestHelper.Request.Callback,
                 ioExecutor: Executor,
                 pageInfo: PageInfo) = object : Callback<YoutubeResponseData> {
+
             override fun onFailure(call: Call<YoutubeResponseData>?, t: Throwable?) {
                 helperRequestCallback.recordFailure(t!!)
                 Log.d(TAG, "networkState ERROR: ${t.message}")
@@ -91,9 +92,7 @@ class DbVideoModelRepository(context: Context) {
                         pageInfo.totalResults = data?.pageInfo?.totalResults ?: ""
 
                         db.runInTransaction {
-                            if (queryData.type == Type.QUERY_STRING) {
-//                                db.youtubeDao().deleteVideosByQuery(queryData.query.dbquery())
-                            } else {
+                            if (queryData.type == Type.RELATED_VIDEO_ID) {
                                 db.youtubeDao().deleteVideosByRelatedToVideoId(queryData.query)
                             }
                             insertResultIntoDb(db, queryData, mappedItems!!)
@@ -143,7 +142,7 @@ class DbVideoModelRepository(context: Context) {
         // the list and update the database with extra data.
         Log.d(TAG, "postsOfSearchYoutube called, query =${queryData.query}")
         // reset db.table on every new query
-        onceExecutor.execute{
+        onceExecutor.execute {
             db.youtubeDao().deleteVideosByQuery()
         }
 
@@ -174,7 +173,6 @@ class DbVideoModelRepository(context: Context) {
     }
 
     fun dumpDb(queryData: QueryData) {
-//        db.youtubeDao().deleteVideosByQuery(query.dbquery())
         val stub = db.youtubeDao().dumpAll()
         Log.d(TAG, "DB stub: $stub")
     }
@@ -196,20 +194,14 @@ class DbVideoModelRepository(context: Context) {
         @MainThread
         override fun onZeroItemsLoaded() {
             Log.d(TAG, "onZeroItemsLoaded: query = ${queryData.query}, lastQuery = $lastQuery")
-            if (queryData.type == Type.QUERY_STRING){
-                if (queryData.query == lastQuery) {
-                    Log.d(TAG, "query==lastQuery, return")
-//                return
-                }
 
-                lastQuery = queryData.query
-                // temporary for testing
-                ioExecutor.execute { dumpDb(queryData) }
-            }
+            lastQuery = queryData.query
+            // temporary for testing
+            ioExecutor.execute { dumpDb(queryData) }
 
-
-            helper.runIfNotRunning(PagingRequestHelper.RequestType.INITIAL) {
-                val call = if (queryData.type == Type.QUERY_STRING){
+            helper.runIfNotRunning(PagingRequestHelper.RequestType.INITIAL)
+            {
+                val call = if (queryData.type == Type.QUERY_STRING) {
                     webService.searchVideo(queryData.query)
                 } else {
                     webService.getRelatedVideos(queryData.query)
@@ -230,7 +222,7 @@ class DbVideoModelRepository(context: Context) {
             }
 
             helper.runIfNotRunning(PagingRequestHelper.RequestType.AFTER) {
-                val call = if (queryData.type == Type.QUERY_STRING){
+                val call = if (queryData.type == Type.QUERY_STRING) {
                     webService.searchVideo(queryData.query, pageStatus.nextPage)
                 } else {
                     webService.getRelatedVideos(queryData.query)
@@ -244,5 +236,4 @@ class DbVideoModelRepository(context: Context) {
             // ignored, since we only ever append to what's in the DB
         }
     }
-
 }
