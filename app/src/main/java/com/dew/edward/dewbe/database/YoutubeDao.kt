@@ -16,11 +16,11 @@ interface YoutubeDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(videos: List<VideoModel>)
 
-    @Query("SELECT * FROM youtube WHERE title LIKE :query ORDER BY indexResponse ASC")
-    fun getVideosByQuery(query: String): DataSource.Factory<Int, VideoModel>
+    @Query("SELECT * FROM youtube ORDER BY indexResponse ASC")
+    fun getVideosByQuery(): DataSource.Factory<Int, VideoModel>
 
-    @Query("DELETE FROM youtube WHERE title LIKE :query")
-    fun deleteVideosByQuery(query: String)
+    @Query("DELETE FROM youtube")
+    fun deleteVideosByQuery()
 
     @Query("SELECT * FROM youtube WHERE relatedToVideoId = :relatedToVideoId ORDER BY indexResponse ASC")
     fun getVideosByRelatedToVideoId(relatedToVideoId: String): DataSource.Factory<Int, VideoModel>

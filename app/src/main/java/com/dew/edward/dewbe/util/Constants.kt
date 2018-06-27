@@ -12,4 +12,5 @@ const val API_KEY = "AIzaSyA7cdJ8OPftCtkqIBpVuIX5CVtY7BW02JU"
 const val KEY_QUERY = "query"
 const val DEFAULT_QUERY = "trump"
 const val VIDEO_MODEL = "video_model"
+const val KEY_USE_IN_MEM = "db type"
 

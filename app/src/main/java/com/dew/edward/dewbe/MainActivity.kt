@@ -8,6 +8,7 @@ import android.arch.lifecycle.ViewModelProviders
 import android.arch.paging.PagedList
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.res.Configuration
 import android.os.Bundle
 import android.support.v7.app.ActionBar
@@ -25,10 +26,7 @@ import com.dew.edward.dewbe.adapter.VideoModelAdapter
 import com.dew.edward.dewbe.model.NetworkState
 import com.dew.edward.dewbe.model.VideoModel
 import com.dew.edward.dewbe.ui.VideoPlayActivity
-import com.dew.edward.dewbe.util.DEFAULT_QUERY
-import com.dew.edward.dewbe.util.GlideApp
-import com.dew.edward.dewbe.util.KEY_QUERY
-import com.dew.edward.dewbe.util.VIDEO_MODEL
+import com.dew.edward.dewbe.util.*
 import com.dew.edward.dewbe.viewmodel.DbVideoViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
@@ -36,21 +34,32 @@ import kotlinx.android.synthetic.main.content_main.*
 
 class MainActivity : AppCompatActivity() {
 
+    private val TAG = "MainActivity"
+
     private lateinit var videoViewModel: DbVideoViewModel
+    private lateinit var preferences: SharedPreferences
+    private lateinit var query: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
+        preferences = getPreferences(Context.MODE_PRIVATE)
+        query = preferences.getString(KEY_QUERY, DEFAULT_QUERY)
+
         initActionBar()
         videoViewModel = getViewModel()
         initRecyclerView()
         initSwipeToRefresh()
 
-        val query = savedInstanceState?.getString(KEY_QUERY) ?: DEFAULT_QUERY
+        if (savedInstanceState != null) {
+            query = savedInstanceState.getString(KEY_QUERY)
+        }
+        Log.d(TAG, "onCreate, query = $query")
         videoViewModel.showSearchQuery(query)
     }
+
 
     private fun initActionBar() {
         supportActionBar?.setDisplayShowHomeEnabled(true)
@@ -155,8 +164,14 @@ class MainActivity : AppCompatActivity() {
         // as you specify a parent activity in AndroidManifest.xml.
         return when (item.itemId) {
             R.id.menu_search -> true
-            R.id.menu_in_memory -> true
-            R.id.menu_in_Storage -> true
+            R.id.menu_in_memory -> {
+                preferences.edit().putBoolean(KEY_USE_IN_MEM, true).apply()
+                true
+            }
+            R.id.menu_in_Storage -> {
+                preferences.edit().putBoolean(KEY_USE_IN_MEM, false).apply()
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
     }
@@ -164,5 +179,14 @@ class MainActivity : AppCompatActivity() {
     override fun onSaveInstanceState(outState: Bundle?) {
         super.onSaveInstanceState(outState)
         outState?.putString(KEY_QUERY, videoViewModel.currentQuery())
+    }
+
+    override fun onDestroy() {
+        with(preferences.edit()) {
+            putString(KEY_QUERY, query)
+            apply()
+        }
+
+        super.onDestroy()
     }
 }

@@ -92,7 +92,7 @@ class DbVideoModelRepository(context: Context) {
 
                         db.runInTransaction {
                             if (queryData.type == Type.QUERY_STRING) {
-                                db.youtubeDao().deleteVideosByQuery(queryData.query.dbquery())
+//                                db.youtubeDao().deleteVideosByQuery(queryData.query.dbquery())
                             } else {
                                 db.youtubeDao().deleteVideosByRelatedToVideoId(queryData.query)
                             }
@@ -142,23 +142,20 @@ class DbVideoModelRepository(context: Context) {
         // create a boundary callback which will observe when the user reaches to the edges of
         // the list and update the database with extra data.
         Log.d(TAG, "postsOfSearchYoutube called, query =${queryData.query}")
+        // reset db.table on every new query
+        onceExecutor.execute{
+            db.youtubeDao().deleteVideosByQuery()
+        }
+
         val boundaryCallback = VideosBoundaryCallback(queryData)
         val dataSourceFactory = if (queryData.type == Type.QUERY_STRING) {
-            db.youtubeDao().getVideosByQuery(queryData.query.dbquery())
+            db.youtubeDao().getVideosByQuery()
         } else {
             db.youtubeDao().getVideosByRelatedToVideoId(queryData.query)
         }
 
         val pagedList = LivePagedListBuilder(dataSourceFactory, DATABASE_PAGE_SIZE)
                 .setBoundaryCallback(boundaryCallback)
-
-
-        // temporary test
-        onceExecutor.execute {
-            val dumpAll = db.youtubeDao().dumpAll()
-            Log.d(TAG, "postsOfSearchYoutube ${queryData.query} DB stub: $dumpAll")
-
-        }
 
         // we are using a mutable live data to trigger refresh requests which eventually calls
         // refresh method and gets a new live data. Each refresh request by the user becomes a newly
