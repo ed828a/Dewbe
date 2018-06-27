@@ -60,6 +60,10 @@ class MainActivity : AppCompatActivity() {
         videoViewModel.showSearchQuery(query)
     }
 
+    override fun onResume() {
+        super.onResume()
+        hideKeyboard()
+    }
 
     private fun initActionBar() {
         supportActionBar?.setDisplayShowHomeEnabled(true)
