@@ -2,9 +2,6 @@ package com.dew.edward.dewbe
 
 
 import android.arch.lifecycle.Observer
-import android.arch.lifecycle.ViewModel
-import android.arch.lifecycle.ViewModelProvider
-import android.arch.lifecycle.ViewModelProviders
 import android.arch.paging.PagedList
 import android.content.Context
 import android.content.Intent
@@ -28,6 +25,7 @@ import com.dew.edward.dewbe.model.VideoModel
 import com.dew.edward.dewbe.ui.VideoPlayActivity
 import com.dew.edward.dewbe.util.*
 import com.dew.edward.dewbe.viewmodel.DbVideoViewModel
+import com.dew.edward.dewbe.viewmodel.getViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
 
@@ -50,7 +48,7 @@ class MainActivity : AppCompatActivity() {
         query = preferences.getString(KEY_QUERY, DEFAULT_QUERY)
 
         initActionBar()
-        videoViewModel = getViewModel()
+        videoViewModel = getViewModel(this@MainActivity)
         initRecyclerView()
         initSwipeToRefresh()
 
@@ -73,12 +71,6 @@ class MainActivity : AppCompatActivity() {
         supportActionBar?.setDisplayShowTitleEnabled(false)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
-
-    private fun getViewModel(): DbVideoViewModel =
-            ViewModelProviders.of(this, object : ViewModelProvider.Factory {
-                override fun <T : ViewModel?> create(modelClass: Class<T>): T =
-                        DbVideoViewModel(this@MainActivity) as T
-            })[DbVideoViewModel::class.java]
 
     private fun initRecyclerView() {
         val glide = GlideApp.with(this)
