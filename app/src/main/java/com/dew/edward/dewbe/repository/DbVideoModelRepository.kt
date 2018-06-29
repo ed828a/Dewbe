@@ -76,6 +76,7 @@ class DbVideoModelRepository(context: Context) {
                 if (response != null && response.isSuccessful) {
                     ioExecutor.execute {
                         val data = response.body()
+                        Log.d(TAG, "data: ${data.toString()}")
                         val mappedItems = data?.items?.map {
                             val video = VideoModel(it.snippet.title,
                                     it.snippet.publishedAt.extractDate(),
@@ -90,6 +91,9 @@ class DbVideoModelRepository(context: Context) {
                         pageInfo.prevPage = data?.prevPageToken ?: ""
                         pageInfo.nextPage = data?.nextPageToken ?: ""
                         pageInfo.totalResults = data?.pageInfo?.totalResults ?: ""
+
+                        Log.d(TAG, "onResponse pageInfo: prevPage = ${pageInfo.prevPage}, nextPage = ${pageInfo.nextPage}, totalResult = ${pageInfo.totalResults} ")
+
 
                         db.runInTransaction {
                             if (queryData.type == Type.RELATED_VIDEO_ID) {
@@ -225,7 +229,7 @@ class DbVideoModelRepository(context: Context) {
                 val call = if (queryData.type == Type.QUERY_STRING) {
                     webService.searchVideo(queryData.query, pageStatus.nextPage)
                 } else {
-                    webService.getRelatedVideos(queryData.query)
+                    webService.getRelatedVideos(queryData.query, pageStatus.nextPage)
                 }
                 call.enqueue(createWebserviceCallback(db, queryData, it, ioExecutor, pageStatus))
             }
