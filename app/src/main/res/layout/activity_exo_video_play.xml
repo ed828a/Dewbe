@@ -6,4 +6,23 @@
     android:layout_height="match_parent"
     tools:context=".ui.ExoVideoPlayActivity">
 
+    <FrameLayout
+        android:id="@+id/videoFrameLayout"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="#000000"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.google.android.exoplayer2.ui.PlayerView
+            android:id="@+id/videoView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:controller_layout_id="@layout/custom_playback_control"
+            app:show_timeout="2000" />
+
+    </FrameLayout>
+
 </android.support.constraint.ConstraintLayout>

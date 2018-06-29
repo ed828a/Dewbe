@@ -22,6 +22,7 @@ import android.view.inputmethod.InputMethodManager
 import com.dew.edward.dewbe.adapter.VideoModelAdapter
 import com.dew.edward.dewbe.model.NetworkState
 import com.dew.edward.dewbe.model.VideoModel
+import com.dew.edward.dewbe.ui.ExoVideoPlayActivity
 import com.dew.edward.dewbe.ui.VideoPlayActivity
 import com.dew.edward.dewbe.util.*
 import com.dew.edward.dewbe.viewmodel.DbVideoViewModel
@@ -77,8 +78,8 @@ class MainActivity : AppCompatActivity() {
         val adapter = VideoModelAdapter(
                 { videoViewModel.retry() },
                 {
-                    val intent = Intent(this@MainActivity, VideoPlayActivity::class.java)
-
+//                    val intent = Intent(this@MainActivity, VideoPlayActivity::class.java)
+                    val intent = Intent(this@MainActivity, ExoVideoPlayActivity::class.java)
                     intent.putExtra(VIDEO_MODEL, it)
                     startActivity(intent)
                 }

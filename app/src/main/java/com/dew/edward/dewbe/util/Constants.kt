@@ -13,4 +13,6 @@ const val KEY_QUERY = "query"
 const val DEFAULT_QUERY = "trump"
 const val VIDEO_MODEL = "video_model"
 const val KEY_USE_IN_MEM = "db type"
+const val PLAYBACK_POSITION = "playback position"
+const val VIDEO_URL = "video url"
 

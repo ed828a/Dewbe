@@ -25,7 +25,10 @@
         <activity
             android:name=".ui.VideoPlayActivity"
             android:theme="@style/AppTheme.NoActionBar"></activity>
-        <activity android:name=".ui.ExoVideoPlayActivity"></activity>
+        <activity android:name=".ui.ExoVideoPlayActivity"
+            android:theme="@style/Theme.AppCompat.NoActionBar">
+
+        </activity>
     </application>
 
 </manifest>
