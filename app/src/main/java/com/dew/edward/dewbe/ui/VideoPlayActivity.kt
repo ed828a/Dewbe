@@ -21,6 +21,7 @@ import com.google.android.youtube.player.YouTubeBaseActivity
 import com.google.android.youtube.player.YouTubeInitializationResult
 import com.google.android.youtube.player.YouTubePlayer
 import kotlinx.android.synthetic.main.activity_video_play.*
+import kotlinx.android.synthetic.main.content_list.*
 
 class VideoPlayActivity : YouTubeBaseActivity(), YouTubePlayer.OnInitializedListener {
 

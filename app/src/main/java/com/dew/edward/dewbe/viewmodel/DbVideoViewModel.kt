@@ -62,10 +62,13 @@ class DbVideoViewModel(context: Context): ViewModel() {
     }
 
     fun currentQuery(): String? = queryString.value
+
+    companion object {
+        fun getViewModel(context: FragmentActivity): DbVideoViewModel =
+                ViewModelProviders.of(context, object : ViewModelProvider.Factory {
+                    override fun <T : ViewModel?> create(modelClass: Class<T>): T =
+                            DbVideoViewModel(context) as T
+                })[DbVideoViewModel::class.java]
+    }
 }
 
-fun getViewModel(context: FragmentActivity): DbVideoViewModel =
-        ViewModelProviders.of(context, object : ViewModelProvider.Factory {
-            override fun <T : ViewModel?> create(modelClass: Class<T>): T =
-                    DbVideoViewModel(context) as T
-        })[DbVideoViewModel::class.java]

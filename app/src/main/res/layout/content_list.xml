@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorPrimaryDark">
+
+    <TextView
+        android:id="@+id/textVideoPlayTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:maxLines="1"
+        android:textColor="@android:color/background_light"
+        app:layout_constraintBottom_toBottomOf="@id/buttonSearch"
+        app:layout_constraintEnd_toStartOf="@+id/buttonDownload"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/buttonSearch"
+        tools:text="NEW MOVIE TRAILERS 2018 | Weekly #22" />
+
+    <ImageButton
+        android:id="@+id/buttonDownload"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimaryDark"
+        android:src="@drawable/download"
+        app:layout_constraintBottom_toBottomOf="@id/buttonSearch"
+        app:layout_constraintEnd_toStartOf="@+id/buttonSearch"
+        app:layout_constraintTop_toTopOf="@id/buttonSearch" />
+
+    <android.support.v7.widget.SearchView
+        android:id="@+id/buttonSearch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="4dp"
+
+        app:closeIcon="@drawable/ic_close"
+        app:iconifiedByDefault="true"
+        app:layout_constraintBottom_toTopOf="@id/recyclerRelatedListView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.421"
+        app:popupTheme="@style/AppTheme.PopupOverlay"
+        app:queryBackground="@color/colorPrimaryDark"
+        app:queryHint="Search movies"
+        app:searchIcon="@drawable/ic_search" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recyclerRelatedListView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/buttonSearch"
+        tools:listitem="@layout/cell_video" />
+
+</android.support.constraint.ConstraintLayout>

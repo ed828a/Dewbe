@@ -23,10 +23,8 @@ import com.dew.edward.dewbe.adapter.VideoModelAdapter
 import com.dew.edward.dewbe.model.NetworkState
 import com.dew.edward.dewbe.model.VideoModel
 import com.dew.edward.dewbe.ui.ExoVideoPlayActivity
-import com.dew.edward.dewbe.ui.VideoPlayActivity
 import com.dew.edward.dewbe.util.*
 import com.dew.edward.dewbe.viewmodel.DbVideoViewModel
-import com.dew.edward.dewbe.viewmodel.getViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
 
@@ -49,7 +47,7 @@ class MainActivity : AppCompatActivity() {
         query = preferences.getString(KEY_QUERY, DEFAULT_QUERY)
 
         initActionBar()
-        videoViewModel = getViewModel(this@MainActivity)
+        videoViewModel = DbVideoViewModel.getViewModel(this@MainActivity)
         initRecyclerView()
         initSwipeToRefresh()
 
