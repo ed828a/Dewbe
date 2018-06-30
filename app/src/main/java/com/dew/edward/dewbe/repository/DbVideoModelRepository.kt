@@ -100,8 +100,8 @@ class DbVideoModelRepository(context: Context) {
                                 db.youtubeDao().deleteVideosByRelatedToVideoId(queryData.query)
                             }
                             insertResultIntoDb(db, queryData, mappedItems!!)
-                            val data = db.youtubeDao().dumpAll()
-                            Log.d(TAG, " onResponse, after insertResultIntoDb, dumpAll: $data")
+                            val Ddata = db.youtubeDao().dumpAll()
+                            Log.d(TAG, " onResponse, after insertResultIntoDb, dumpAll: $Ddata")
                         }
                         // since we are in bg thread now, post the result.
                         // help Request Callback will update the NetWorkState
@@ -176,7 +176,7 @@ class DbVideoModelRepository(context: Context) {
         )
     }
 
-    fun dumpDb(queryData: QueryData) {
+    fun dumpDb() {
         val stub = db.youtubeDao().dumpAll()
         Log.d(TAG, "DB stub: $stub")
     }
@@ -201,7 +201,7 @@ class DbVideoModelRepository(context: Context) {
 
             lastQuery = queryData.query
             // temporary for testing
-            ioExecutor.execute { dumpDb(queryData) }
+            ioExecutor.execute { dumpDb() }
 
             helper.runIfNotRunning(PagingRequestHelper.RequestType.INITIAL)
             {

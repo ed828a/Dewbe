@@ -180,6 +180,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
+        Log.d(TAG, "onDestroy() called. $query")
         with(preferences.edit()) {
             putString(KEY_QUERY, query)
             apply()

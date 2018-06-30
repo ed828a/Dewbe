@@ -19,7 +19,9 @@ import com.dew.edward.dewbe.R
 import com.dew.edward.dewbe.adapter.VideoModelAdapter
 import com.dew.edward.dewbe.model.NetworkState
 import com.dew.edward.dewbe.model.VideoModel
-import com.dew.edward.dewbe.util.*
+import com.dew.edward.dewbe.util.PLAYBACK_POSITION
+import com.dew.edward.dewbe.util.VIDEO_MODEL
+import com.dew.edward.dewbe.util.VIDEO_URL
 import com.dew.edward.dewbe.viewmodel.DbVideoViewModel
 import com.google.android.exoplayer2.DefaultLoadControl
 import com.google.android.exoplayer2.DefaultRenderersFactory
@@ -32,7 +34,6 @@ import com.google.android.exoplayer2.util.Util
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_exo_video_play.*
-import kotlinx.android.synthetic.main.content_list.*
 
 class ExoVideoPlayActivity : AppCompatActivity() {
 
@@ -80,11 +81,10 @@ class ExoVideoPlayActivity : AppCompatActivity() {
 
         queryViewModel = DbVideoViewModel.getViewModel(this)
         if (resources.configuration.orientation == android.content.res.Configuration.ORIENTATION_PORTRAIT) {
-            textVideoPlayTitle?.text = videoModel.title
 
+            textVideoPlayTitle?.text = videoModel.title
             initRelatedList()
             initSearch()
-
             queryViewModel.showRelatedToVideoId(videoModel.videoId)
         }
 
@@ -92,7 +92,7 @@ class ExoVideoPlayActivity : AppCompatActivity() {
     private fun initRelatedList() {
         listView = recyclerRelatedListView
         listView.layoutManager = GridLayoutManager(this, 2)
-        val glide = GlideApp.with(this)
+
         adapter = VideoModelAdapter(
                 { queryViewModel.retry() },
                 {
@@ -181,7 +181,7 @@ class ExoVideoPlayActivity : AppCompatActivity() {
     private fun initializePlayer(context: Context, videoUrl: String) {
         if (player == null) {
             player = ExoPlayerFactory.newSimpleInstance(
-                    DefaultRenderersFactory(this),
+                    DefaultRenderersFactory(context),
                     DefaultTrackSelector(),
                     DefaultLoadControl())
 
