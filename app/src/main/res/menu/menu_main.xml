@@ -4,16 +4,15 @@
     tools:context="com.dew.edward.dewbe.MainActivity">
     <item
         android:id="@+id/menu_search"
+        android:icon="@drawable/ic_search"
         android:orderInCategory="100"
         android:title="@string/action_search"
-        android:icon="@drawable/ic_search"
-        app:showAsAction="ifRoom|collapseActionView"
-        app:actionViewClass="android.support.v7.widget.SearchView" />
+        app:actionViewClass="android.support.v7.widget.SearchView"
+        app:showAsAction="ifRoom|collapseActionView" />
 
-    <item android:title="@string/db_in_memory"
-        android:id="@+id/menu_in_memory"
-        app:showAsAction="never"/>
-    <item android:title="@string/db_in_storage"
-        android:id="@+id/menu_in_Storage"
-        app:showAsAction="never"/>
+    <item
+        android:id="@+id/action_settings"
+        android:title="@string/action_settings"
+        app:showAsAction="never" />
+
 </menu>

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <RadioGroup
+        android:id="@+id/playerGroup"
+        style="@style/RadioGroupStyle"
+        android:layout_width="@dimen/radio_group_width"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/radio_group_vertical_margin"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <RadioButton
+            android:id="@+id/youtubePlayer"
+            style="@style/RadioButtonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/youtube_player"
+            android:checked="false" />
+
+        <RadioButton
+            android:id="@+id/exoplayer"
+            style="@style/RadioButtonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/exoplayer"
+            android:checked="false" />
+
+    </RadioGroup>
+
+    <CheckBox
+        android:id="@+id/enableDB"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:buttonTint="@android:color/background_light"
+        android:text="@string/enable_db"
+        android:checked="false"
+        android:textColor="@android:color/background_light"
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="@id/playerGroup"
+        app:layout_constraintTop_toBottomOf="@id/playerGroup" />
+
+    <RadioGroup
+        android:id="@+id/dbTypeGroup"
+        style="@style/RadioGroupStyle"
+        android:layout_width="@dimen/radio_group_width"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@id/playerGroup"
+        app:layout_constraintStart_toStartOf="@id/playerGroup"
+        app:layout_constraintTop_toBottomOf="@id/enableDB">
+
+        <RadioButton
+            android:id="@+id/db_in_mem"
+            style="@style/RadioButtonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:enabled="false"
+            android:text="@string/db_in_memory" />
+
+        <RadioButton
+            android:id="@+id/db_on_disk"
+            style="@style/RadioButtonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/db_on_disk"
+            android:enabled="false"/>
+    </RadioGroup>
+
+</android.support.constraint.ConstraintLayout>

@@ -1,7 +1,11 @@
 <resources>
     <string name="app_name">Dewbe</string>
     <string name="action_search">Search</string>
+    <string name="action_settings">Settings</string>
     <string name="db_in_memory">DB in Memory</string>
-    <string name="db_in_storage">DB in Storage</string>
+    <string name="db_on_disk">DB on Disk</string>
     <string name="retry">Retry</string>
+    <string name="youtube_player">YouTube Player</string>
+    <string name="exoplayer">ExoPlayer</string>
+    <string name="enable_db">Enable DB</string>
 </resources>

@@ -20,4 +20,19 @@
     <style name="AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
     <style name="PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
+    <style name="RadioGroupStyle">
+        <item name="android:background">@drawable/dialog_boarder</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:paddingEnd">8dp</item>
+        <item name="android:paddingLeft">8dp</item>
+        <item name="android:paddingRight">8dp</item>
+        <item name="android:paddingStart">8dp</item>
+    </style>
+
+    <style name="RadioButtonStyle">
+        <item name="android:layoutDirection">rtl</item>
+        <item name="android:textColor">@android:color/background_light</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
 </resources>
