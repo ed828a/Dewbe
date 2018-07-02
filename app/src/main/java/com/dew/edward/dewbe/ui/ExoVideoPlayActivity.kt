@@ -46,7 +46,7 @@ class ExoVideoPlayActivity : AppCompatActivity() {
     lateinit var adapter: VideoModelAdapter
     lateinit var listView: RecyclerView
 
-    private lateinit var extractor:YouTubeExtractor
+    private lateinit var extractor: YouTubeExtractor
 
     // bandwidth meter to measure and estimate bandwidth
     private var player: SimpleExoPlayer? = null
@@ -60,7 +60,7 @@ class ExoVideoPlayActivity : AppCompatActivity() {
         setContentView(R.layout.activity_exo_video_play)
 
         if (ContextCompat.checkSelfPermission(this@ExoVideoPlayActivity,
-                        android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ){
+                        android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this@ExoVideoPlayActivity,
                     arrayOf(android.Manifest.permission.WRITE_EXTERNAL_STORAGE), PERMISSION_REQUEST)
         }
@@ -103,6 +103,7 @@ class ExoVideoPlayActivity : AppCompatActivity() {
         }
 
     }
+
     private fun initRelatedList() {
         listView = recyclerRelatedListView
         listView.layoutManager = GridLayoutManager(this, 2)
@@ -113,11 +114,11 @@ class ExoVideoPlayActivity : AppCompatActivity() {
                     extractor.extract(it.videoId)
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe (
-                                    {extraction ->
+                            .subscribe(
+                                    { extraction ->
                                         bindVideoToPlayer(extraction)
                                     },
-                                    {error ->
+                                    { error ->
                                         errorHandler(error)
                                     }
                             )
@@ -223,10 +224,14 @@ class ExoVideoPlayActivity : AppCompatActivity() {
 
     override fun onSaveInstanceState(outState: Bundle?) {
         super.onSaveInstanceState(outState)
-        playbackPosition = player?.currentPosition ?: 0
-        outState?.putLong(PLAYBACK_POSITION, playbackPosition)
+        val position = if (Util.SDK_INT <= 23 || player == null) {
+            playbackPosition
+        } else {
+            player?.currentPosition ?: 0
+        }
+        outState?.putLong(PLAYBACK_POSITION, position)
         outState?.putString(VIDEO_URL, videoUrl)
-        Log.d("onSaveInstanceState", "playbackPosition = $playbackPosition")
+        Log.d("onSaveInstanceState", "playbackPosition = $position")
     }
 
     public override fun onStart() {
@@ -247,6 +252,7 @@ class ExoVideoPlayActivity : AppCompatActivity() {
     public override fun onPause() {
         super.onPause()
         if (Util.SDK_INT <= 23) {
+            playbackPosition = player?.currentPosition ?: 0
             releasePlayer()
         }
     }
@@ -272,8 +278,10 @@ class ExoVideoPlayActivity : AppCompatActivity() {
                 }
             }
 
-    fun fullscreen(view: View){
-        requestedOrientation = if (resources.configuration.orientation == android.content.res.Configuration.ORIENTATION_PORTRAIT){
+    fun fullscreen(view: View) {
+        Log.d("fullscreen", "playbackPosition: player?.currentPosition = ${player?.currentPosition}")
+        playbackPosition = player?.currentPosition ?: 0
+        requestedOrientation = if (resources.configuration.orientation == android.content.res.Configuration.ORIENTATION_PORTRAIT) {
             ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
         } else {
             ActivityInfo.SCREEN_ORIENTATION_PORTRAIT

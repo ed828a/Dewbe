@@ -58,7 +58,6 @@ class DbVideoModelRepository(context: Context) {
                     video
                 }
 
-
                 db.youtubeDao().insert(indexedItems)
             }
         }
