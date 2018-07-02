@@ -89,13 +89,13 @@
             android:textColor="#FFBEBEBE"
             android:textSize="14sp"
             android:textStyle="bold" />
-
+        
        <ImageView
            android:id="@+id/fullscreen"
            android:layout_width="wrap_content"
-           android:layout_height="wrap_content"
+           android:layout_height="wrap_content" 
            android:onClick="fullscreen"
-           android:src="@drawable/exo_controls_fullscreen_enter" />
+           android:src="@drawable/exo_controls_fullscreen_exit" />
 
     </LinearLayout>
 

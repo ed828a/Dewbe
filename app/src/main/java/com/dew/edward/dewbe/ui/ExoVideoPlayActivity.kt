@@ -3,6 +3,7 @@ package com.dew.edward.dewbe.ui
 import android.arch.lifecycle.Observer
 import android.arch.paging.PagedList
 import android.content.Context
+import android.content.pm.ActivityInfo
 import android.net.Uri
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
@@ -257,4 +258,12 @@ class ExoVideoPlayActivity : AppCompatActivity() {
                     adapter.setNetworkState(networkState)
                 }
             }
+
+    fun fullscreen(view: View){
+        requestedOrientation = if (resources.configuration.orientation == android.content.res.Configuration.ORIENTATION_PORTRAIT){
+            ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+        } else {
+            ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        }
+    }
 }
