@@ -4,8 +4,11 @@ import android.arch.lifecycle.Observer
 import android.arch.paging.PagedList
 import android.content.Context
 import android.content.pm.ActivityInfo
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
+import android.support.v4.app.ActivityCompat
+import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -56,6 +59,12 @@ class ExoVideoPlayActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_exo_video_play)
 
+        if (ContextCompat.checkSelfPermission(this@ExoVideoPlayActivity,
+                        android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ){
+            ActivityCompat.requestPermissions(this@ExoVideoPlayActivity,
+                    arrayOf(android.Manifest.permission.WRITE_EXTERNAL_STORAGE), PERMISSION_REQUEST)
+        }
+
         videoModel = intent.getParcelableExtra(VIDEO_MODEL)
 
         extractor = YouTubeExtractor.Builder().okHttpClientBuilder(null).build()
@@ -87,6 +96,10 @@ class ExoVideoPlayActivity : AppCompatActivity() {
             initSearch()
 
             queryViewModel.showRelatedToVideoId(videoModel.videoId)
+
+            buttonDownload.setOnClickListener {
+                queryViewModel.downloading(videoUrl, videoModel.videoId)
+            }
         }
 
     }

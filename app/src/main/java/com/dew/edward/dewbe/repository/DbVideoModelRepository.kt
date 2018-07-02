@@ -6,15 +6,18 @@ import android.arch.lifecycle.Transformations
 import android.arch.paging.LivePagedListBuilder
 import android.arch.paging.PagedList
 import android.content.Context
+import android.os.Environment
 import android.support.annotation.MainThread
 import android.util.Log
 import com.dew.edward.dewbe.api.YoutubeAPI
 import com.dew.edward.dewbe.database.YoutubeDb
 import com.dew.edward.dewbe.model.*
 import com.dew.edward.dewbe.util.*
+import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.io.*
 import java.util.concurrent.Executor
 import java.util.concurrent.Executors
 
@@ -240,4 +243,65 @@ class DbVideoModelRepository(context: Context) {
             // ignored, since we only ever append to what's in the DB
         }
     }
+
+    fun downloadVideo(urlString: String, fileName: String){
+
+        val call = webService.downloadVideoByUrlStream(urlString)
+        call.enqueue(object : Callback<ResponseBody>{
+            override fun onFailure(call: Call<ResponseBody>?, t: Throwable?) {
+                t?.printStackTrace()
+                Log.d(TAG, "downloading failed: ${t?.message}")
+            }
+
+            override fun onResponse(call: Call<ResponseBody>?, response: Response<ResponseBody>?) {
+                if (response != null && response.isSuccessful){
+                    onceExecutor.execute {
+                        Log.d(TAG, "video downloading started. response: $response")
+                        val isSuccess = writeResponseBodyToDisk(fileName, response.body()!!)
+                        Log.d(TAG, "downloading completed successfully: $isSuccess")
+                    }
+                } else {
+                    Log.d(TAG, "Response Error: ${response?.message()}")
+                }
+            }
+        })
+    }
+
+    private fun writeResponseBodyToDisk(fileName: String, responseBody: ResponseBody): Boolean {
+        val fileFolder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+        Log.d(TAG, "filename = $fileFolder/$fileName")
+        val file = File(fileFolder, "$fileName.mp4")
+        var inputStream: InputStream? = null
+        var outputStream: OutputStream? = null
+
+        try {
+            val fileReader = ByteArray(4096)
+            val fileSize = responseBody.contentLength()
+            var fileSizeDownloaded: Long = 0
+
+            inputStream = responseBody.byteStream()
+            outputStream = FileOutputStream(file)
+
+            while (true){
+                val read = inputStream.read(fileReader)
+                if (read == -1){
+                    break
+                }
+                outputStream.write(fileReader, 0, read)
+                fileSizeDownloaded += read.toLong()
+
+                Log.d(TAG, "Downloading progress: $fileSizeDownloaded of $fileSize")
+            }
+            outputStream.flush()
+
+            return true
+        } catch (e: IOException) {
+            e.printStackTrace()
+            return false
+        } finally {
+            inputStream?.close()
+            outputStream?.close()
+        }
+    }
+
 }

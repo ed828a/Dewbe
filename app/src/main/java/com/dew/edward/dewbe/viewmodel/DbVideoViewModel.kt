@@ -63,6 +63,13 @@ class DbVideoViewModel(context: Context): ViewModel() {
 
     fun currentQuery(): String? = queryString.value
 
+    /**
+     * this function is just a wrapper, will be proved
+     */
+    fun downloading(videoUrl: String, videoId: String){
+        repository.downloadVideo(videoUrl, videoId)
+    }
+
     companion object {
         fun getViewModel(context: FragmentActivity): DbVideoViewModel =
                 ViewModelProviders.of(context, object : ViewModelProvider.Factory {

@@ -18,4 +18,7 @@ const val VIDEO_URL = "video_url"
 const val KEY_IS_DB_ENABLED = "is_db_enabled"
 const val KEY_DB_TYPE = "db_type"
 const val KEY_PLAYER_TYPE = "player_type"
+const val DOWNLOAD_BASE_URL = "https://r3---sn-ppoxu-5qaz.googlevideo.com/"
+const val PERMISSION_REQUEST = 88
+
 

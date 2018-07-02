@@ -9,12 +9,15 @@ import com.dew.edward.dewbe.util.NETWORK_PAGE_SIZE
 import com.dew.edward.dewbe.util.YOUTUBE_BASE_URL
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
+import okhttp3.ResponseBody
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Query
+import retrofit2.http.Streaming
+import retrofit2.http.Url
 
 
 /**
@@ -37,6 +40,10 @@ interface YoutubeAPI {
                          @Query("maxResults") maxResults: String = "$NETWORK_PAGE_SIZE",
                          @Query("type") type: String = "video",
                          @Query("key") key: String = API_KEY): Call<YoutubeResponseData>
+
+    @Streaming
+    @GET
+    fun downloadVideoByUrlStream(@Url url: String): Call<ResponseBody>
 
     companion object {
 
