@@ -210,7 +210,9 @@ class ExoVideoPlayActivity : AppCompatActivity() {
 
     override fun onSaveInstanceState(outState: Bundle?) {
         super.onSaveInstanceState(outState)
-        playbackPosition = player?.currentPosition ?: 0
+        if (Util.SDK_INT > 23) {
+            playbackPosition = player?.currentPosition ?: 0
+        }
         outState?.putLong(PLAYBACK_POSITION, playbackPosition)
         outState?.putString(VIDEO_URL, videoUrl)
         Log.d("onSaveInstanceState", "playbackPosition = $playbackPosition")
@@ -234,6 +236,7 @@ class ExoVideoPlayActivity : AppCompatActivity() {
     public override fun onPause() {
         super.onPause()
         if (Util.SDK_INT <= 23) {
+            playbackPosition = player?.currentPosition ?: 0
             releasePlayer()
         }
     }
