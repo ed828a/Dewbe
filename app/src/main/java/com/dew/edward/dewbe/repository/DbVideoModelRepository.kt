@@ -128,7 +128,7 @@ class DbVideoModelRepository(context: Context) {
             val call = if (queryData.type == Type.QUERY_STRING) {
                 webService.searchVideo(queryData.query, pageStatus.nextPage)
             } else {
-                webService.getRelatedVideos(queryData.query)
+                webService.getRelatedVideos(queryData.query, pageStatus.nextPage)
             }
 
             call.enqueue(createWebserviceCallback(db, queryData, it, ioExecutor, pageStatus))
@@ -203,6 +203,7 @@ class DbVideoModelRepository(context: Context) {
             // temporary for testing
             ioExecutor.execute { dumpDb(queryData) }
 
+            // because it's a initial request, no nextPage at this moment.
             helper.runIfNotRunning(PagingRequestHelper.RequestType.INITIAL)
             {
                 val call = if (queryData.type == Type.QUERY_STRING) {
