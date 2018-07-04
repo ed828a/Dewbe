@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.pm.ActivityInfo
 import android.net.Uri
 import android.os.Bundle
+import android.os.PowerManager
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -51,10 +52,15 @@ class ExoVideoPlayActivity : AppCompatActivity() {
     private var currentWindow: Int = 0
     private var playWhenReady = true
     private var videoUrl: String = ""
+    lateinit var wl: PowerManager.WakeLock
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_exo_video_play)
+
+        val pm = getSystemService(Context.POWER_SERVICE) as PowerManager
+        wl = pm.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK, WAKE_TAG)
+        wl.acquire()
 
         videoModel = intent.getParcelableExtra(VIDEO_MODEL)
 
@@ -165,6 +171,10 @@ class ExoVideoPlayActivity : AppCompatActivity() {
     }
 
     private fun bindVideoToPlayer(result: YouTubeExtraction) {
+        if (result.videoStreams.isEmpty()){
+            Toast.makeText(this@ExoVideoPlayActivity, "This video isn't playable. Please try others.", Toast.LENGTH_LONG).show()
+            return
+        }
         videoUrl = result.videoStreams.first().url
         playbackPosition = 0  // new video start
         Log.d("ExoMediaActivity", "videoUrl: $videoUrl")
@@ -268,5 +278,10 @@ class ExoVideoPlayActivity : AppCompatActivity() {
         } else {
             ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         }
+    }
+
+    override fun onDestroy() {
+        wl.release()
+        super.onDestroy()
     }
 }
