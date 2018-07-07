@@ -3,6 +3,23 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 
+
+def getProperty(String filename, String propName) {
+    def propsFile = rootProject.file(filename)
+    if (propsFile.exists()) {
+        def props = new Properties()
+        props.load(new FileInputStream(propsFile))
+        if (props[propName] != null) {
+            return props[propName]
+        } else {
+            print("No such property " + propName + " in file " + filename);
+        }
+    } else {
+        print(filename + " does not exist!")
+    }
+}
+
+
 android {
     compileSdkVersion 27
     defaultConfig {
@@ -12,6 +29,7 @@ android {
         multiDexEnabled true
         versionCode 1
         versionName "1.0"
+        buildConfigField "String", "API_KEY", "\"${getProperty("local.properties", "api")}\""
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -32,7 +50,7 @@ dependencies {
     kapt 'com.github.bumptech.glide:compiler:4.7.1'
     implementation 'com.android.support:design:27.1.1'
     implementation 'com.squareup.retrofit2:retrofit:2.4.0'
-    implementation 'com.squareup.retrofit2:converter-gson:2.3.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
     implementation 'com.squareup.okhttp3:logging-interceptor:3.10.0'
     implementation 'android.arch.paging:runtime:1.0.1'
     implementation "android.arch.persistence.room:runtime:1.1.1"
