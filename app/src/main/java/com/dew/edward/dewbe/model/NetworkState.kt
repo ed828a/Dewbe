@@ -10,7 +10,7 @@ enum class Status {
     FAILED
 }
 
-//@Suppress("DataClassPrivateConstructor")
+@Suppress("DataClassPrivateConstructor")
 data class  NetworkState private constructor(val status: Status, val msg: String? = null){
     companion object {
         val LOADED = NetworkState(Status.SUCCESS)

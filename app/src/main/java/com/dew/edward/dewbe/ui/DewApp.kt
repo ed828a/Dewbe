@@ -26,7 +26,6 @@ class DewApp : MultiDexApplication() {
     }
 
     override fun onCreate() {
-        Log.d("DewApp", "onCreate() called")
         super.onCreate()
         localBroadcastManager = LocalBroadcastManager.getInstance(applicationContext)
         sharedPreferences = getSharedPreferences("DewApp", Context.MODE_PRIVATE)
@@ -34,6 +33,5 @@ class DewApp : MultiDexApplication() {
         isDbEnabled = sharedPreferences.getBoolean(KEY_IS_DB_ENABLED, false)
         dbType = sharedPreferences.getString(KEY_DB_TYPE, "DB_On_Disk")
 
-        Log.d("DewApp", "playerType = $playerType, isDbEnabled = $isDbEnabled, dbType = $dbType")
     }
 }

@@ -14,7 +14,6 @@ const val API_KEY = BuildConfig.API_KEY
 const val KEY_QUERY = "query"
 const val DEFAULT_QUERY = "trump"
 const val VIDEO_MODEL = "video_model"
-const val KEY_USE_IN_MEM = "db_type"
 const val PLAYBACK_POSITION = "playback_position"
 const val VIDEO_URL = "video_url"
 const val KEY_IS_DB_ENABLED = "is_db_enabled"

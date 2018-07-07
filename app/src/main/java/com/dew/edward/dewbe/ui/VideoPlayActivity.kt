@@ -9,6 +9,7 @@ import android.support.v7.widget.SearchView
 import android.util.Log
 import android.view.View
 import android.widget.ImageView
+import android.widget.Toast
 import com.dew.edward.dewbe.R
 import com.dew.edward.dewbe.adapter.VideoModelAdapter
 import com.dew.edward.dewbe.model.NetworkState
@@ -108,11 +109,9 @@ class VideoPlayActivity : YouTubeBaseActivity(), YouTubePlayer.OnInitializedList
                 }
 
                 buttonSearch.onActionViewCollapsed()
-//                hideKeyboard()
                 buttonDownload.visibility = View.VISIBLE
                 textVideoPlayTitle.visibility = View.VISIBLE
 
-                Log.d("onQueryTextSubmit", "queryString: $query")
                 return false
             }
 
@@ -146,13 +145,13 @@ class VideoPlayActivity : YouTubeBaseActivity(), YouTubePlayer.OnInitializedList
         }
 
         if (player != null) {
-            Log.e("Rotate", "App.mYoutubePlayer = player:  ${player.toString()}")
             DewApp.mYoutubePlayer = player
         }
     }
 
     override fun onInitializationFailure(p0: YouTubePlayer.Provider?, p1: YouTubeInitializationResult?) {
-
+        Toast.makeText(this@VideoPlayActivity,
+                "YouTube Player Failed. Please restart your app.", Toast.LENGTH_SHORT).show()
     }
 
 

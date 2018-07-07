@@ -4,7 +4,6 @@ package com.dew.edward.dewbe
 import android.arch.lifecycle.Observer
 import android.arch.paging.PagedList
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.res.Configuration
@@ -15,7 +14,6 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.SearchView
-import android.util.Log
 import android.view.Gravity
 import android.view.Menu
 import android.view.MenuItem
@@ -36,8 +34,6 @@ import kotlinx.android.synthetic.main.settings_dialog.*
 
 
 class MainActivity : AppCompatActivity() {
-
-    private val TAG = "MainActivity"
 
     private lateinit var videoViewModel: DbVideoViewModel
     private lateinit var preferences: SharedPreferences
@@ -62,7 +58,6 @@ class MainActivity : AppCompatActivity() {
         if (savedInstanceState != null) {
             query = savedInstanceState.getString(KEY_QUERY)
         }
-        Log.d(TAG, "onCreate, query = $query")
         videoViewModel.showSearchQuery(query)
     }
 
@@ -80,11 +75,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initRecyclerView() {
-        val glide = GlideApp.with(this)
         val adapter = VideoModelAdapter(
                 { videoViewModel.retry() },
                 {
-                    val intent = if (DewApp.playerType == "YoutubePlayer"){
+                    val intent = if (DewApp.playerType == "YoutubePlayer") {
                         Intent(this@MainActivity, VideoPlayActivity::class.java)
                     } else {
                         Intent(this@MainActivity, ExoVideoPlayActivity::class.java)
@@ -141,19 +135,15 @@ class MainActivity : AppCompatActivity() {
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 query?.trim()?.let {
-                    if (it.isNotEmpty()) {
-//                        Toast.makeText(searchView.context, "searchView is clicked : ${query?.trim()}", Toast.LENGTH_SHORT).show()
-                        if (videoViewModel.showSearchQuery(it)) {
-                            mainListView.scrollToPosition(0)
-                            (mainListView.adapter as? VideoModelAdapter)?.submitList(null)
-                        }
+                    if (it.isNotEmpty() && videoViewModel.showSearchQuery(it)) {
+                        mainListView.scrollToPosition(0)
+                        (mainListView.adapter as? VideoModelAdapter)?.submitList(null)
                     }
                 }
 
                 hideKeyboard()
                 searchView.clearFocus()
                 searchView.setQuery("", false)
-                Log.d("initSearchView", "queryString: ${query?.trim()}")
                 return true
             }
 
@@ -186,12 +176,12 @@ class MainActivity : AppCompatActivity() {
         val dialog = AlertDialog.Builder(this, android.R.style.Theme_Holo_Dialog)
                 .setTitle("Settings")
                 .setView(view)
-                .setPositiveButton("OK", DialogInterface.OnClickListener { dialog, which ->
+                .setPositiveButton("OK") { _, _ ->
                     Toast.makeText(this, "Settings will be effective after the app restarts.", Toast.LENGTH_LONG).show()
-                })
-                .setNegativeButton("Cancel", DialogInterface.OnClickListener { dialog, which ->
+                }
+                .setNegativeButton("Cancel") { _, _ ->
                     Toast.makeText(this, "Negative button clicked.", Toast.LENGTH_SHORT).show()
-                })
+                }
                 .create()
         dialog.show()
 
@@ -200,29 +190,26 @@ class MainActivity : AppCompatActivity() {
                 dialog.dbTypeGroup.getChildAt(i).isEnabled = dialog.enableDB.isChecked
             }
 
-            if (dialog.enableDB.isChecked){
+            if (dialog.enableDB.isChecked) {
                 DewApp.sharedPreferences.edit().putBoolean(KEY_IS_DB_ENABLED, true).apply()
             } else {
                 DewApp.sharedPreferences.edit().putBoolean(KEY_IS_DB_ENABLED, false).apply()
                 DewApp.sharedPreferences.edit().putString(KEY_DB_TYPE, "").apply()
             }
-//            Toast.makeText(this, "enableDb clicked", Toast.LENGTH_LONG).show()
         }
 
-        dialog.playerGroup.setOnCheckedChangeListener { group, checkedId ->
-            when (checkedId){
+        dialog.playerGroup.setOnCheckedChangeListener { _, checkedId ->
+            when (checkedId) {
                 R.id.youtubePlayer -> DewApp.sharedPreferences.edit().putString(KEY_PLAYER_TYPE, "YoutubePlayer").apply()
                 R.id.exoplayer -> DewApp.sharedPreferences.edit().putString(KEY_PLAYER_TYPE, "ExoPlayer").apply()
             }
-//            Toast.makeText(this, "playerGroup clicked", Toast.LENGTH_LONG).show()
         }
 
-        dialog.dbTypeGroup.setOnCheckedChangeListener { group, checkedId ->
-            when (checkedId){
+        dialog.dbTypeGroup.setOnCheckedChangeListener { _, checkedId ->
+            when (checkedId) {
                 R.id.db_in_mem -> DewApp.sharedPreferences.edit().putString(KEY_DB_TYPE, "DB_In_Memory").apply()
                 R.id.db_on_disk -> DewApp.sharedPreferences.edit().putString(KEY_DB_TYPE, "DB_On_Disk").apply()
             }
-//            Toast.makeText(this, "dbTypeGroup clicked", Toast.LENGTH_LONG).show()
         }
     }
 

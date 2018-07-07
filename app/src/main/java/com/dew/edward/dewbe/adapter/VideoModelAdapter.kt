@@ -103,7 +103,6 @@ class VideoModelAdapter(private val retryCallback: () -> Unit,
                                      private val glide: GlideRequests) : RecyclerView.ViewHolder(view) {
 
         private val textViewTitle = view.textViewTitle
-        private val textViewDesc = view.textViewChannelTitle
         private val textViewDate = view.textViewDate
         private val imageViewThumb = view.imageViewThumb
 

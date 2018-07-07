@@ -53,8 +53,6 @@ class DbVideoModelRepository(context: Context) {
                     if (queryData.type == Type.RELATED_VIDEO_ID) {
                         video.relatedToVideoId = queryData.query
                     }
-
-                    Log.d("insertResultIntoDb", "Index: $index")
                     video
                 }
 
@@ -85,7 +83,6 @@ class DbVideoModelRepository(context: Context) {
                                     it.snippet.thumbnails.high.url,
                                     it.id.videoId)
 
-                            Log.d("ResponseData", "VideoModel: $video")
                             video
                         }
 
@@ -94,16 +91,13 @@ class DbVideoModelRepository(context: Context) {
                         pageInfo.nextPage = data?.nextPageToken ?: ""
                         pageInfo.totalResults = data?.pageInfo?.totalResults ?: ""
 
-                        Log.d(TAG, "onResponse pageInfo: prevPage = ${pageInfo.prevPage}, nextPage = ${pageInfo.nextPage}, totalResult = ${pageInfo.totalResults} ")
-
-
                         db.runInTransaction {
                             if (queryData.type == Type.RELATED_VIDEO_ID) {
                                 db.youtubeDao().deleteVideosByRelatedToVideoId(queryData.query)
                             }
                             insertResultIntoDb(db, queryData, mappedItems!!)
-                            val data = db.youtubeDao().dumpAll()
-                            Log.d(TAG, " onResponse, after insertResultIntoDb, dumpAll: $data")
+                            val dataDump = db.youtubeDao().dumpAll()
+                            Log.d(TAG, " onResponse, after insertResultIntoDb, dumpAll: $dataDump")
                         }
                         // since we are in bg thread now, post the result.
                         // help Request Callback will update the NetWorkState
@@ -135,7 +129,6 @@ class DbVideoModelRepository(context: Context) {
 
             call.enqueue(createWebserviceCallback(db, queryData, it, ioExecutor, pageStatus))
         }
-
         return networkState
     }
 
@@ -199,8 +192,6 @@ class DbVideoModelRepository(context: Context) {
          */
         @MainThread
         override fun onZeroItemsLoaded() {
-            Log.d(TAG, "onZeroItemsLoaded: query = ${queryData.query}, lastQuery = $lastQuery")
-
             lastQuery = queryData.query
             // temporary for testing
             ioExecutor.execute { dumpDb(queryData) }
@@ -220,8 +211,6 @@ class DbVideoModelRepository(context: Context) {
          * User reached to the end of the list.
          */
         override fun onItemAtEndLoaded(itemAtEnd: VideoModel) {
-            Log.d(TAG, "onItemAtEndLoaded called, nextPageToken: ${pageStatus.nextPage}")
-
             if (pageStatus.nextPage.isEmpty()) {
                 Log.d(TAG, "nextPage = ${pageStatus.nextPage}, return")
                 return
@@ -244,26 +233,6 @@ class DbVideoModelRepository(context: Context) {
     }
 
     fun downloadVideo(urlString: String, fileName: String){
-
-        val call = webService.downloadVideoByUrlStream(urlString)
-        call.enqueue(object : Callback<ResponseBody>{
-            override fun onFailure(call: Call<ResponseBody>?, t: Throwable?) {
-                t?.printStackTrace()
-                Log.d(TAG, "downloading failed: ${t?.message}")
-            }
-
-            override fun onResponse(call: Call<ResponseBody>?, response: Response<ResponseBody>?) {
-                if (response != null && response.isSuccessful){
-                    onceExecutor.execute {
-                        Log.d(TAG, "video downloading started. response: $response")
-                        val isSuccess = writeResponseBodyToDisk(fileName, response.body()!!)
-                        Log.d(TAG, "downloading completed successfully: $isSuccess")
-                    }
-                } else {
-                    Log.d(TAG, "Response Error: ${response?.message()}")
-                }
-            }
-        })
     }
 
     private fun writeResponseBodyToDisk(fileName: String, responseBody: ResponseBody): Boolean {
@@ -303,4 +272,23 @@ class DbVideoModelRepository(context: Context) {
         }
     }
 
+    val foryou = fun (urlString: String, fileName: String){
+        val call = webService.downloadVideoByUrlStream(urlString)
+        call.enqueue(object : Callback<ResponseBody>{
+            override fun onFailure(call: Call<ResponseBody>?, t: Throwable?) {
+                t?.printStackTrace()
+                Log.d(TAG, "downloading failed: ${t?.message}")
+            }
+
+            override fun onResponse(call: Call<ResponseBody>?, response: Response<ResponseBody>?) {
+                if (response != null && response.isSuccessful){
+                    onceExecutor.execute {
+                        val isSuccess = writeResponseBodyToDisk(fileName, response.body()!!)
+                    }
+                } else {
+                    Log.d(TAG, "Response Error: ${response?.message()}")
+                }
+            }
+        })
+    }
 }

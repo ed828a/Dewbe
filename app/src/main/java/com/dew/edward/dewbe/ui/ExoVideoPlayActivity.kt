@@ -73,7 +73,6 @@ class ExoVideoPlayActivity : AppCompatActivity() {
             playbackPosition = savedInstanceState.getLong(PLAYBACK_POSITION)
             videoUrl = savedInstanceState.getString(VIDEO_URL)
 
-            Log.d("onCreate", "playbackPosition = $playbackPosition")
         } else {
             extractor.extract(videoModel.videoId)
                     .subscribeOn(Schedulers.io())
@@ -161,7 +160,6 @@ class ExoVideoPlayActivity : AppCompatActivity() {
                 buttonDownload.visibility = View.VISIBLE
                 textVideoPlayTitle.visibility = View.VISIBLE
 
-                Log.d("onQueryTextSubmit", "queryString: $query")
                 return false
             }
 
@@ -181,7 +179,6 @@ class ExoVideoPlayActivity : AppCompatActivity() {
     private fun bindVideoToPlayer(result: YouTubeExtraction) {
         videoUrl = result.videoStreams.first().url
         playbackPosition = 0  // new video start
-        Log.d("ExoMediaActivity", "videoUrl: $videoUrl")
         if (player != null) {
             releasePlayer()
         }
@@ -203,7 +200,6 @@ class ExoVideoPlayActivity : AppCompatActivity() {
             videoView.player = player
             player!!.playWhenReady = playWhenReady
             player!!.seekTo(currentWindow, playbackPosition)
-            Log.d("initializePlayer", "playbackPosition = $playbackPosition")
         }
         val uri = Uri.parse(videoUrl)
         val mediaSource =
@@ -231,7 +227,6 @@ class ExoVideoPlayActivity : AppCompatActivity() {
         }
         outState?.putLong(PLAYBACK_POSITION, position)
         outState?.putString(VIDEO_URL, videoUrl)
-        Log.d("onSaveInstanceState", "playbackPosition = $position")
     }
 
     public override fun onStart() {
@@ -243,7 +238,6 @@ class ExoVideoPlayActivity : AppCompatActivity() {
 
     public override fun onResume() {
         super.onResume()
-//        hideSystemUi()
         if (Util.SDK_INT <= 23 || player == null) {
             initializePlayer(this, videoUrl)
         }
@@ -279,9 +273,10 @@ class ExoVideoPlayActivity : AppCompatActivity() {
             }
 
     fun fullscreen(view: View) {
-        Log.d("fullscreen", "playbackPosition: player?.currentPosition = ${player?.currentPosition}")
         playbackPosition = player?.currentPosition ?: 0
-        requestedOrientation = if (resources.configuration.orientation == android.content.res.Configuration.ORIENTATION_PORTRAIT) {
+        requestedOrientation =
+                if (resources.configuration.orientation ==
+                        android.content.res.Configuration.ORIENTATION_PORTRAIT) {
             ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
         } else {
             ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
