@@ -13,6 +13,7 @@ import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.SearchView
 import android.view.Gravity
 import android.view.Menu
@@ -90,7 +91,7 @@ class MainActivity : AppCompatActivity() {
         )
 
         if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            mainListView.layoutManager = GridLayoutManager(this, 2)
+            mainListView.layoutManager = GridLayoutManager(this, 2) as RecyclerView.LayoutManager?
         } else {
             mainListView.layoutManager = LinearLayoutManager(this)
         }
