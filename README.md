@@ -14,3 +14,8 @@ The app uses ViewModel to abstract the data from UI and Repository as single sou
 
 ![](https://github.com/ed828a/Dewbe/blob/develop/architect_Net_DB.png)
 
+**F-Droid**
+
+1. Go to ownCloud tab in F-Droid.
+2. Open versions section.
+3. Download the latest version that contains beta in the name.
